@@ -22,6 +22,7 @@ def menu(df):
   print(f"Welcome, {uname}")
   return uname, pword, row_index
 
+
 def new_acc(df):
   flag = False
   while not flag:
@@ -29,29 +30,31 @@ def new_acc(df):
     uname = input("Enter New Username \n-- ")
     pword = input("Enter New Password \n-- ")
     exist = False
-    for i in df["Name"]:
+    for i in df["Name"]:#checks if uname is already taken
       if uname != i:
         continue
       else:
         exist = True
     if exist is False:
-      account = {
+      
+      account = {    #creates row as dict
         "Name": uname,
         "Pword": pword,
         "mon_1": "", "mon_2": "",
         "mon_3": "", "mon_4": "",
         "mon_5": "", "mon_6": "", }
 
-      df = pd.concat([df, pd.DataFrame([account])], ignore_index=True)
-      df.to_csv("UserData.csv", index=False)
+      df = pd.concat([df, pd.DataFrame([account])], ignore_index=True)#adds row to df
+      df.to_csv("UserData.csv", index=False)#re-writes to file
       print()
       print("Your account has been registered.")
-      row_index = df.index.get_loc(df[df["Name"] == uname].index[0])
+      row_index = df.index.get_loc(df[df["Name"] == uname].index[0])#the index of the user's row
       flag = True
     else:
       print()
       print("Sorry, another trainer's already used that name.")
   return uname, pword, row_index
+
 
 def login(df):
   flag = False
@@ -59,14 +62,14 @@ def login(df):
     print()
     uname = input("Enter Username \n-- ")
     pword = input("Enter password \n-- ")
-    row_index = 0
+    row_index = 0 
     for i in df["Name"]:
       if uname == i:
         if pword == df.loc[row_index, "Pword"]:
-           flag = True
-           break
+           flag = True#will break the while loop
+           break#breaks the for loop
       else:
-          row_index += 1     
+          row_index += 1  #manually incrementing to get user's row   
 
     if flag is False:
       print()
@@ -79,6 +82,7 @@ def get_user_row(row_index):
   user_df = df.loc[row_index]
   return user_df
 
+
 def team_display(row_index):
   print()
   print("======================================")
@@ -88,17 +92,17 @@ def team_display(row_index):
   party_df = user_df[2:8]
   members = []
   for i in party_df:
-    if pd.isna(i) is True:
+    if pd.isna(i) is True:#method to check if a cell contains a missing value
       print("Empty")
     else:
-      i = str(i).replace(".0", "")
-      mon = json.loads(r.get(API_URL+"pokemon/"+str(i)).text)
-      image = r.get(f"https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/{i}.png")
+      i = str(i).replace(".0", "")#removes any decimal place
+      mon = json.loads(r.get(API_URL+"pokemon/"+str(i)).text)#gets the json for the pokemon
       print("#"+str(mon['id'])+" — "+mon['name'])
       members.append(mon['name'])
   stats_display(members)
   print("======================================")
   return None
+
 
 def stats_display(list):
   s_name = ["HP", "Atk", "Def", "Sp.Atk", "Sp.Def", "Spe"]
@@ -137,7 +141,6 @@ def stats_display(list):
   plt.show(block=False)
 
 
-
 #fullmatch search from input, repeats if no pokemon is found
 def search():
   print("---------------------------------------")
@@ -154,6 +157,7 @@ def search():
   except:
     print("I've never heard of that Pokémon.")
     search()
+
 
 #drop-down filter search: takes a type from drop-down; outputs first 10 results
 def search_tag():
@@ -215,7 +219,6 @@ def menu2():#main menu
         print("Sorry, I didn't quite catch that.")
         
 
-
 def add_mon():
   user_df = get_user_row(row_index)
   party = user_df[2:]
@@ -255,7 +258,6 @@ def add_mon():
   menu2() 
 
 
-
 def delete_mon():
   user_df = get_user_row(row_index)
   print("---------------------------------------")
@@ -270,7 +272,6 @@ def delete_mon():
   elif pd.isna(user_df.iloc[delete+1]) is True or delete == 6:
     user_df.iloc[delete+1] = ""
   else:
-    print(user_df.iloc[delete+1])
     while delete < 6:
       user_df.iloc[delete+1] = user_df.iloc[delete+2]
       delete += 1
@@ -278,6 +279,7 @@ def delete_mon():
   df.iloc[row_index] = user_df
   df.to_csv('UserData.csv', index=False)
   menu2()
+
 
 def menu3():
   print("---------------------------------------")
@@ -292,6 +294,7 @@ def menu3():
       delete()
     case _:
       menu2()
+
 
 def username_change():
   user_df = get_user_row(row_index)
@@ -314,6 +317,7 @@ def username_change():
       print("Sorry, another trainer's already used that name.")
       username_change()
   menu2()
+
 
 def delete():
   print("ACCOUNT DETAILS CANNOT BE RECOVERED ONCE DELETED")
